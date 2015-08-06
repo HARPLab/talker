@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>talker</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <description>TTS and audio playback action service</description>
 
   <maintainer email="cliddick@cmu.edu">Clint Liddick</maintainer>
@@ -20,5 +20,6 @@
   <run_depend>message_runtime</run_depend> 
   <run_depend>actionlib</run_depend>
   <run_depend>actionlib_msgs</run_depend>
+  <run_depend>subprocess32</run_depend> <!-- pip package -->
   <run_depend>espeak</run_depend> 
 </package>
