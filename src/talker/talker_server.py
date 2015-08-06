@@ -4,7 +4,7 @@ import roslib
 roslib.load_manifest('talker')
 import rospy
 import actionlib
-import os
+import subprocess
 
 from talker.msg import SayAction, SayResult
 
@@ -15,11 +15,24 @@ class SayServer(object):
 
     def say(self, goal):
         rospy.loginfo('saying "{0}"'.format(goal.text))
-        result = os.system('espeak -s 160 "{0}"'.format(goal.text))
-        if result == 0:
-            self.say_server.set_succeeded(SayResult(True))
-        else:
-            self.say_server.set_succeeded(SayResult(False))
+        r = rospy.Rate(1)
+        try:
+            proc = subprocess.Popen(['espeak', '-s', '160', '"{0}"'.format(goal.text)])
+
+            while proc.poll() == None:
+                if self.say_server.is_preempt_requested():
+                    proc.terminate()
+                    rospy.loginfo('canceling say request...')
+                    self.say_server.set_preempted(SayResult(False))
+                    break
+                r.sleep()
+
+            if proc.returncode == 0:
+                self.say_server.set_succeeded(SayResult(True))
+
+        except OSError:
+            rospy.logerr('Unable to speak. Make sure "espeak" is installed.')
+            self.say_server.set_aborted(SayResult(False))
 
 
 if __name__ == '__main__':
