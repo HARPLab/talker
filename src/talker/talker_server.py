@@ -17,7 +17,7 @@ class SayServer(object):
         rospy.loginfo('saying "{0}"'.format(goal.text))
         r = rospy.Rate(1)
         try:
-            proc = subprocess.Popen(['espeak', '-s', '160', '"{0}"'.format(goal.text)])
+            proc = subprocess.Popen(['aoss', 'swift', '"{0}"'.format(goal.text)])
 
             while proc.poll() == None:
                 if self.say_server.is_preempt_requested():
@@ -31,7 +31,7 @@ class SayServer(object):
                 self.say_server.set_succeeded(SayResult(True))
 
         except OSError:
-            rospy.logerr('Unable to speak. Make sure "espeak" is installed.')
+            rospy.logerr('Unable to speak. Make sure "swift" and "alsa-oss" are installed.')
             self.say_server.set_aborted(SayResult(False))
 
 
